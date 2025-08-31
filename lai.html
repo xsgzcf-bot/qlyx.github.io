@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>双人飞行棋</title>
+    <title>飞行棋-基础版</title>
     <style>
         * {
             margin: 0;
@@ -261,7 +261,7 @@
 </head>
 <body>
     <div class="game-container">
-        <h1>双人飞行棋</h1>
+        <h1>飞行棋-基础版</h1>
         
         <div class="message" id="message">玩家1的回合，请掷骰骰子</div>
         
@@ -329,7 +329,7 @@
                 },
                 // 所有格子的固定任务
                 cellTasks: {
-                    1: "游戏开始！给对方一个拥抱",
+                     1: "游戏开始！给对方一个拥抱",
                     2: "对视5秒，不许笑",
                     3: "特殊格子：后退2格",
                     4: "夸赞对方的一个优点",
@@ -493,45 +493,53 @@
                 });
             }
             
-            // 处理格子任务
-            async function handleCellTask(position, player) {
-                const task = gameState.cellTasks[position];
-                const cellEffect = gameState.specialCells[position];
-                
-                if (cellEffect) {
-                    // 特殊格子
-                    await showTaskPopup('特殊效果', cellEffect.message);
-                    
-                    switch (cellEffect.type) {
-                        case 'back':
-                            if (player === 1) {
-                                gameState.player1Pos = Math.max(1, gameState.player1Pos - cellEffect.value);
-                            } else {
-                                gameState.player2Pos = Math.max(1, gameState.player2Pos - cellEffect.value);
-                            }
-                            break;
-                            
-                        case 'forward':
-                            if (player === 1) {
-                                gameState.player1Pos = Math.min(50, gameState.player1Pos + cellEffect.value);
-                            } else {
-                                gameState.player2Pos = Math.min(50, gameState.player2Pos + cellEffect.value);
-                            }
-                            break;
-                            
-                        case 'reroll':
-                            return true; // 需要重掷
-                    }
-                    
-                    updatePlayerPositions();
+            // 处理格子任务/
+async function handleCellTask(position, player) {
+    const task = gameState.cellTasks[position];
+    const cellEffect = gameState.specialCells[position];
+    
+    // 先显示格子固定任务
+    await showTaskPopup('互动任务', task);
+    
+    if (cellEffect) {
+        // 特殊格子
+        await showTaskPopup('特殊效果', cellEffect.message);
+        
+        switch (cellEffect.type) {
+            case 'back':
+                if (player === 1) {
+                    gameState.player1Pos = Math.max(1, gameState.player1Pos - cellEffect.value);
                 } else {
-                    // 普通格子 - 显示固定任务
-                    await showTaskPopup('互动任务', task);
+                    gameState.player2Pos = Math.max(1, gameState.player2Pos - cellEffect.value);
                 }
+                break;
                 
-                return false; // 不需要重掷
-            }
-            
+            case 'forward':
+                if (player === 1) {
+                    gameState.player1Pos = Math.min(50, gameState.player1Pos + cellEffect.value);
+                } else {
+                    gameState.player2Pos = Math.min(50, gameState.player2Pos + cellEffect.value);
+                }
+                break;
+                
+            case 'reroll':
+                return true; // 需要重掷
+        }
+        
+        updatePlayerPositions();
+        
+        // 如果移动到了新格子，显示新格子的任务
+        const newPosition = player === 1 ? gameState.player1Pos : gameState.player2Pos;
+        if (newPosition !== position) {
+            await showTaskPopup('互动任务', gameState.cellTasks[newPosition]);
+        }
+    }
+    
+    return false; // 不需要重掷
+}
+
+
+
             // 检查游戏是否结束
             function checkGameOver() {
                 if (gameState.player1Pos === 50) {

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情侣转盘游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+            flex-shrink: 0;
+        }
+        
+        .wheel {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 3s cubic-bezier(0.17, 0.89, 0.32, 1); /* 优化后的动画曲线 */
+            transform: rotate(0deg);
+            background: conic-gradient(
+                #FF5252 0deg 24deg,
+                #FF4081 24deg 48deg,
+                #E040FB 48deg 72deg,
+                #7C4DFF 72deg 96deg,
+                #536DFE 96deg 120deg,
+                #448AFF 120deg 144deg,
+                #40C4FF 144deg 168deg,
+                #18FFFF 168deg 192deg,
+                #64FFDA 192deg 216deg,
+                #69F0AE 216deg 240deg,
+                #B2FF59 240deg 264deg,
+                #EEFF41 264deg 288deg,
+                #FFFF00 288deg 312deg,
+                #FFD740 312deg 336deg,
+                #FFAB40 336deg 360deg
+            );
+        }
+        
+        .wheel-center {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ff5722;
+            z-index: 10;
+        }
+        
+        .spin-btn {
+            padding: 12px 24px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .spin-btn:active {
+            background-color: #3367d6;
+            transform: scale(0.95);
+        }
+        
+        .spin-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .task-list {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .task-list h3 {
+            margin-bottom: 15px;
+            color: #2196f3;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-list h3::after {
+            content: "▼";
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+        
+        .task-list h3.collapsed::after {
+            transform: rotate(-90deg);
+        }
+        
+        .task-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .task-items.collapsed {
+            max-height: 0 !important;
+        }
+        
+        .task-item {
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            padding: 8px;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .task-item:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .task-item.selected {
+            background-color: #bbdefb;
+            font-weight: bold;
+        }
+        
+        .task-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 300px;
+            background-color: white;  /* 修复这里，添加了冒号 */
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            display: none;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .task-popup h3 {
+            margin-bottom: 15px;
+            color: #ff9800;
+        }
+        
+        .task-popup p {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .task-popup button {
+            padding: 8px 16px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .task-popup button:active {
+            background-color: #f57c00;
+        }
+        
+        .edit-tasks {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .edit-tasks h3 {
+            margin-bottom: 10px;
+            color: #2196f3;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .edit-tasks h3::after {
+            content: "▼";
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+        
+        .edit-tasks h3.collapsed::after {
+            transform: rotate(-90deg);
+        }
+        
+        .edit-area {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            resize: vertical;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .edit-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .edit-content.collapsed {
+            max-height: 0 !important;
+        }
+        
+        .save-btn {
+            padding: 8px 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>情侣转盘游戏</h1>
+    
+    <div class="wheel-container">
+        <div class="wheel" id="wheel"></div>
+        <div class="wheel-center"></div>
+        <div class="wheel-pointer"></div>
+    </div>
+    
+    <button class="spin-btn" id="spin-btn">开始旋转</button>
+    
+    <div class="task-list">
+        <h3 id="task-list-title">任务列表</h3>
+        <div class="task-items" id="task-items">
+            <!-- 任务将通过JavaScript动态生成 -->
+        </div>
+    </div>
+    
+    <div class="edit-tasks">
+        <h3 id="edit-tasks-title">自定义任务</h3>
+        <div class="edit-content" id="edit-content">
+            <textarea class="edit-area" id="edit-area" placeholder="每行输入一个任务，共15个任务"></textarea>
+            <button class="save-btn" id="save-btn">保存任务</button>
+        </div>
+    </div>
+    
+    <div class="task-popup" id="task-popup">
+        <h3 id="task-title">任务</h3>
+        <p id="task-content"></p>
+        <button id="task-ok">确定</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 游戏状态
+            const gameState = {
+                isSpinning: false,
+                currentSection: 0,
+                // 默认概率权重（后台设置，不显示给用户）
+                probabilities: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+                // 默认任务
+                tasks: [
+                    "躺下享受被对方舔遍全身1分钟",
+                    "翘起屁股被对方打5下",
+                    "自己使用安慰棒按摩私处2分钟",
+                    "与对方69式1分钟",
+                    "露出私处并允许对方拍照一张",
+                    "弹对方jj或奶子",
+                    "对方坐自己脸上，吸吮对方jj或阴蒂30秒",
+                    "观音坐莲30秒运动不许射",
+                    "对方站着自己跪着帮他口一分钟",
+                    "被对方用牙齿咬住乳头磨蹭10秒",
+                    "用B或JJ蹭脸30秒并重新转一次",
+                    "【惩罚】舔女方乳头、舔男方jj 直到转到【解除惩罚】",
+                    "被对手伸进裤子随意摸30秒",
+                    "用嘴含住对手蛋蛋或阴蒂30秒",
+                    "【解除惩罚】对方舔你上半身的各个部位超过30秒"
+                ]
+            };
+            
+            // DOM 元素
+            const wheel = document.getElementById('wheel');
+            const spinBtn = document.getElementById('spin-btn');
+            const taskItems = document.getElementById('task-items');
+            const editArea = document.getElementById('edit-area');
+            const saveBtn = document.getElementById('save-btn');
+            const taskPopup = document.getElementById('task-popup');
+            const taskTitle = document.getElementById('task-title');
+            const taskContent = document.getElementById('task-content');
+            const taskOk = document.getElementById('task-ok');
+            const taskListTitle = document.getElementById('task-list-title');
+            const editTasksTitle = document.getElementById('edit-tasks-title');
+            const editContent = document.getElementById('edit-content');
+            
+            // 初始化折叠状态
+            function initCollapse() {
+                // 默认设置为收起状态
+                taskListTitle.classList.add('collapsed');
+                taskItems.classList.add('collapsed');
+                editTasksTitle.classList.add('collapsed');
+                editContent.classList.add('collapsed');
+                
+                // 任务列表折叠/展开
+                taskListTitle.addEventListener('click', function() {
+                    this.classList.toggle('collapsed');
+                    taskItems.classList.toggle('collapsed');
+                    
+                    if (!taskItems.classList.contains('collapsed')) {
+                        taskItems.style.maxHeight = taskItems.scrollHeight + 'px';
+                    }
+                });
+                
+                // 自定义任务折叠/展开
+                editTasksTitle.addEventListener('click', function() {
+                    this.classList.toggle('collapsed');
+                    editContent.classList.toggle('collapsed');
+                    
+                    if (!editContent.classList.contains('collapsed')) {
+                        editContent.style.maxHeight = editContent.scrollHeight + 'px';
+                    }
+                });
+            }
+            
+            // 初始化任务列表
+            function initTaskList() {
+                taskItems.innerHTML = '';
+                
+                gameState.tasks.forEach((task, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'task-item';
+                    item.textContent = `${index + 1}. ${task}`;
+                    item.dataset.index = index;
+                    taskItems.appendChild(item);
+                });
+                
+                // 初始化编辑区域
+                editArea.value = gameState.tasks.join('\n');
+            }
+            
+            // 根据概率随机选择一个分区（使用时间戳增强随机性）
+            function getRandomSection() {
+                // 使用时间戳作为随机种子
+                const seed = Date.now() % 1000;
+                const randomBase = (Math.sin(seed) + 1) / 2; // 生成0-1之间的值
+                
+                // 计算总权重
+                const totalWeight = gameState.probabilities.reduce((sum, weight) => sum + weight, 0);
+                let random = randomBase * totalWeight;
+                
+                // 根据权重选择分区
+                for (let i = 0; i < gameState.probabilities.length; i++) {
+                    if (random < gameState.probabilities[i]) {
+                        return i;
+                    }
+                    random -= gameState.probabilities[i];
+                }
+                
+                return 0; // 默认返回第一个分区
+            }
+            
+            // 计算旋转角度（顺时针方向）
+            function calculateRotation(targetSection) {
+                // 每个分区24度 (360/15)
+                const sectionAngle = 24;
+                // 目标角度是目标分区的位置减去一点点，使指针指向分区中间
+                const targetAngle = (targetSection * sectionAngle) + (sectionAngle / 2);
+                // 添加多圈旋转（顺时针方向为正值）
+                return 360 * 5 + targetAngle;
+            }
+            
+            // 显示任务弹窗
+            function showTaskPopup(section) {
+                taskTitle.textContent = `任务 ${section + 1}`;
+                taskContent.textContent = gameState.tasks[section];
+                taskPopup.style.display = 'block';
+                
+                // 高亮选中的任务
+                document.querySelectorAll('.task-item').forEach(item => {
+                    item.classList.remove('selected');
+                    if (parseInt(item.dataset.index) === section) {
+                        item.classList.add('selected');
+                    }
+                });
+                
+                return new Promise((resolve) => {
+                    taskOk.onclick = function() {
+                        taskPopup.style.display = 'none';
+                        resolve();
+                    };
+                });
+            }
+            
+            // 旋转转盘（优化后的版本）
+            async function spinWheel() {
+                if (gameState.isSpinning) return;
+                
+                gameState.isSpinning = true;
+                spinBtn.disabled = true;
+                
+                // 重置转盘位置（先快速回到起点）
+                wheel.style.transition = 'transform 0.1s ease-out';
+                wheel.style.transform = 'rotate(0deg)';
+                
+                // 随机选择目标分区
+                const targetSection = getRandomSection();
+                gameState.currentSection = targetSection;
+                
+                // 计算旋转角度
+                const rotationAngle = calculateRotation(targetSection);
+                
+                // 等待重置完成
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // 应用平滑旋转
+                wheel.style.transition = 'transform 3s cubic-bezier(0.17, 0.89, 0.32, 1)';
+                wheel.style.transform = `rotate(${rotationAngle}deg)`;
+                
+                // 旋转结束后显示任务
+                setTimeout(async () => {
+                    await showTaskPopup(targetSection);
+                    
+                    gameState.isSpinning = false;
+                    spinBtn.disabled = false;
+                }, 3000); // 3秒后显示任务
+            }
+            
+            // 保存自定义任务
+            function saveTasks() {
+                const newTasks = editArea.value.split('\n').filter(task => task.trim() !== '');
+                
+                if (newTasks.length !== 15) {
+                    alert('请输入正好15个任务，每行一个');
+                    return;
+                }
+                
+                gameState.tasks = newTasks;
+                initTaskList();
+                alert('任务已更新');
+            }
+            
+            // 初始化游戏
+            function initGame() {
+                initTaskList();
+                initCollapse();
+                
+                spinBtn.addEventListener('click', spinWheel);
+                saveBtn.addEventListener('click', saveTasks);
+            }
+            
+            // 初始化游戏
+            initGame();
+        });
+    </script>
+</body>
+</html>
