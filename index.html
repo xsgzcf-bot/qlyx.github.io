@@ -3,661 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>双人飞行棋</title>
+    <title>模式选择</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         
         body {
-            background-color: #f5f5f5;
-            height: 100vh;
+            background-color: #0a0a15;
+            color: #fff;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
-            overflow: hidden;
-            touch-action: manipulation;
-        }
-        
-        .game-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-        }
-        
-        h1 {
-            font-size: 24px;
-            margin: 10px 0;
-            color: #333;
-        }
-        
-        .board {
-            width: 100%;
-            height: 50%;
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 4px;
-            margin-bottom: 10px;
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .cell {
-            display: flex;
             justify-content: center;
-            align-items: center;
-            background-color: #e0f7fa;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .cell.special {
-            background-color: #ffccbc;
-        }
-        
-        .cell.start {
-            background-color: #c8e6c9;
-        }
-        
-        .cell.end {
-            background-color: #ffcdd2;
-        }
-        
-        .player1 {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            background-color: transparent;
-            border-radius: 50%;
-            z-index: 10;
-        }
-        
-        .player1::before {
-            content: "👦";
-            font-size: 20px;
-            position: absolute;
-        }
-        
-        .player2 {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            background-color: transparent;
-            border-radius: 50%;
-            z-index: 10;
-        }
-        
-        .player2::before {
-            content: "👧";
-            font-size: 20px;
-            position: absolute;
-        }
-        
-        .dice-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .dice {
-            width: 60px;
-            height: 60px;
-            background-color: #fff;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            margin-bottom: 8px;
-            user-select: none;
-        }
-        
-        .dice:active {
-            transform: scale(0.95);
-        }
-        
-        #roll-btn {
-            padding: 8px 16px;
-            background-color: #4285f4;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        
-        #roll-btn:active {
-            background-color: #3367d6;
-        }
-        
-        .player-info {
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 10px;
-        }
-        
-        .player {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .player.active {
-            background-color: #e3f2fd;
-            box-shadow: 0 0 0 3px #2196f3;
-            transform: scale(1.05);
-        }
-        
-        .player1-info {
-            color: #4285f4;
-        }
-        
-        .player2-info {
-            color: #ea4335;
-        }
-        
-        .rules {
-            width: 100%;
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-            max-height: 120px;
-            font-size: 12px;
-        }
-        
-        .rules h3 {
-            margin-bottom: 8px;
-            color: #2196f3;
-            font-size: 14px;
-        }
-        
-        .rules ul {
-            padding-left: 16px;
-        }
-        
-        .rules li {
-            margin-bottom: 4px;
-        }
-        
-        .message {
-            width: 100%;
-            padding: 8px;
-            background-color: #e3f2fd;
-            border-radius: 5px;
-            text-align: center;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: #2196f3;
-            font-weight: bold;
-        }
-        
-        .task-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 300px;
-            background-color: rgba(0, 0, 0, 0.9);
-            color: white;
             padding: 20px;
-            border-radius: 10px;
-            z-index: 100;
-            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 星空背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 30%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 75% 20%, rgba(255, 255, 255, 0.06) 2px, transparent 2px),
+                radial-gradient(circle at 50% 70%, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.05) 2px, transparent 2px),
+                radial-gradient(circle at 25% 10%, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+            background-size: 300px 300px;
+            z-index: -1;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .title {
             text-align: center;
+            margin-bottom: 40px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #e6e6ff;
+            text-shadow: 0 0 10px rgba(100, 100, 255, 0.5);
         }
         
-        .task-popup h3 {
-            margin-bottom: 15px;
-            color: #ff9800;
+        .mode-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
         }
         
-        .task-popup p {
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        
-        .task-popup button {
-            padding: 8px 16px;
-            background-color: #ff9800;
-            color: white;
+        .mode-button {
+            position: relative;
+            background-color: #1a1a3a;
             border: none;
-            border-radius: 20px;
-            font-size: 14px;
+            border-radius: 16px;
+            padding: 18px 20px;
+            color: #e6e6ff;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: left;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         
-        .task-popup button:active {
-            background-color: #f57c00;
+        .mode-button:hover {
+            background-color: #242450;
+            transform: translateY(-2px);
+        }
+        
+        .mode-button:active {
+            transform: translateY(1px);
+        }
+        
+        .hot-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ff3366;
+            color: white;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .lock-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+        }
+        
+        .lock-icon::before, .lock-icon::after {
+            content: '';
+            position: absolute;
+            background-color: #8899aa;
+        }
+        
+        .lock-icon::before {
+            width: 12px;
+            height: 10px;
+            top: 3px;
+            left: 4px;
+            border-radius: 4px 4px 0 0;
+            background-color: #8899aa;
+        }
+        
+        .lock-icon::after {
+            width: 8px;
+            height: 7px;
+            top: 10px;
+            left: 6px;
+            border-radius: 2px;
+        }
+        
+        @media (max-width: 430px) {
+            .title {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+            
+            .mode-button {
+                padding: 16px 18px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>双人飞行棋</h1>
+    <div class="container">
+        <h1 class="title">选择您喜欢的模式</h1>
         
-        <div class="message" id="message">玩家1的回合，请掷骰骰子</div>
-        
-        <div class="board" id="board">
-            <!-- 棋盘格子将通过JavaScript动态生成 -->
-        </div>
-        
-        <div class="player-info">
-            <div class="player player1-info active" id="player1-info">
-                <span>玩家1</span>
-                <span id="player1-pos">位置: 起点</span>
-            </div>
-            <div class="player player2-info" id="player2-info">
-                <span>玩家2</span>
-                <span id="player2-pos">位置: 起点</span>
-            </div>
-        </div>
-        
-        <div class="dice-container">
-            <div class="dice" id="dice">?</div>
-            <button id="roll-btn">掷骰骰子</button>
-        </div>
-        
-        <div class="rules">
-            <h3>游戏规则</h3>
-            <ul>
-                <li>两位玩家轮流掷骰骰子前进</li>
-                <li>先到达终点（第50格）的玩家获胜</li>
-                <li>所有格子都有固定任务</li>
-                <li>特殊格子有后退、前进或重摇效果</li>
-                <li>普通格子有固定互动任务</li>
-            </ul>
-        </div>
-        
-        <div class="task-popup" id="task-popup">
-            <h3 id="task-title">任务</h3>
-            <p id="task-content"></p>
-            <button id="task-ok">确定</button>
+        <div class="mode-buttons">
+            <button class="mode-button" onclick="navigateTo('basic.html')">
+                基础模式
+            </button>
+            
+            <button class="mode-button" onclick="navigateTo('love.html')">
+                恋爱版
+            </button>
+            
+            <button class="mode-button" onclick="navigateTo('couple.html')">
+                <span class="hot-badge">HOT</span>
+                情侣版
+                <div class="lock-icon"></div>
+            </button>
+            
+            <button class="mode-button" onclick="navigateTo('advanced.html')">
+                <span class="hot-badge">HOT</span>
+                高级版
+                <div class="lock-icon"></div>
+            </button>
+            
+            <button class="mode-button" onclick="navigateTo('private.html')">
+                <span class="hot-badge">HOT</span>
+                私密版
+                <div class="lock-icon"></div>
+            </button>
+            
+            <button class="mode-button" onclick="navigateTo('combo.html')">
+                <span class="hot-badge">HOT</span>
+                组合模式
+                <div class="lock-icon"></div>
+            </button>
+            
+            <button class="mode-button" onclick="navigateTo('custom.html')">
+                自定义
+            </button>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 游戏状态
-            const gameState = {
-                currentPlayer: 1,
-                player1Pos: 0,
-                player2Pos: 0,
-                diceValue: 0,
-                gameOver: false,
-                isProcessing: false, // 标记是否正在处理任务
-                // 特殊格子定义
-                specialCells: {
-                    3: { type: 'back', value: 2, message: '后退2格!' },
-                    7: { type: 'forward', value: 3, message: '前进3格!' },
-                    12: { type: 'back', value: 4, message: '后退4格!' },
-                    15: { type: 'reroll', message: '获得一次重掷机会!' },
-                    20: { type: 'forward', value: 5, message: '前进5格!' },
-                    25: { type: 'back', value: 3, message: '后退3格!' },
-                    30: { type: 'forward', value: 4, message: '前进4格!' },
-                    35: { type: 'back', value: 5, message: '后退5格!' },
-                    40: { type: 'reroll', message: '获得一次重掷机会!' },
-                    45: { type: 'forward', value: 3, message: '前进3格!' },
-                    48: { type: 'back', value: 6, message: '后退6格!' }
-                },
-                // 所有格子的固定任务
-                cellTasks: {
-                    1: "游戏开始！给对方一个拥抱",
-                    2: "对视5秒，不许笑",
-                    3: "特殊格子：后退2格",
-                    4: "夸赞对方的一个优点",
-                    5: "分享一件今天开心的事",
-                    6: "模仿对方的习惯动作",
-                    7: "特殊格子：前进3格",
-                    8: "给对方一个拥抱",
-                    9: "说出对方最喜欢吃的食物",
-                    10: "回忆你们第一次见面时的场景",
-                    11: "互相喂一口零食",
-                    12: "特殊格子：后退4格",
-                    13: "给对方按摩肩膀10秒",
-                    14: "说一句甜言蜜语",
-                    15: "特殊格子：获得重掷机会",
-                    16: "模仿一种动物让对方猜",
-                    17: "一起做一个搞笑的表情",
-                    18: "分享一个自己的小秘密",
-                    19: "说出你最欣赏对方的三个品质",
-                    20: "特殊格子：前进5格",
-                    21: "一起唱两句喜欢的歌",
-                    22: "用三种语言说'我爱你'",
-                    23: "模仿对方的说话方式说一句话",
-                    24: "分享一个未来的小愿望",
-                    25: "特殊格子：后退3格",
-                    26: "互相击掌并说'合作愉快'",
-                    27: "给对方起一个可爱的昵称",
-                    28: "回忆你们一起度过的最难忘的一天",
-                    29: "说出一件你想和对方一起做的事",
-                    30: "特殊格子：前进4格",
-                    31: "模仿电影中的经典台词",
-                    32: "分享一个自己的童年趣事",
-                    33: "互相做一个鬼脸",
-                    34: "说出对方今天穿的衣服颜色",
-                    35: "特殊格子：后退5格",
-                    36: "一起数三声后做同样的动作",
-                    37: "分享一个最近学到的新知识",
-                    38: "说出对方最喜欢的一部电影",
-                    39: "互相猜拳，输的人做俯卧撑3个",
-                    40: "特殊格子：获得重掷机会",
-                    41: "一起做一个爱心手势并拍照",
-                    42: "说出对方手机锁屏密码的最后一位",
-                    43: "模仿对方走路的样子",
-                    44: "分享一个自己的小怪癖",
-                    45: "特殊格子：前进3格",
-                    46: "说出对方最好的朋友的名字",
-                    47: "一起做一个瑜伽动作保持5秒",
-                    48: "特殊格子：后退6格",
-                    49: "分享一个自己最近的烦恼",
-                    50: "恭喜到达终点！给对方一个吻"
-                }
-            };
+        function navigateTo(page) {
+            // 在实际应用中，这里会跳转到对应的HTML页面
+            // window.location.href = page;
             
-            // DOM 元素
-            const board = document.getElementById('board');
-            const dice = document.getElementById('dice');
-            const rollBtn = document.getElementById('roll-btn');
-            const message = document.getElementById('message');
-            const player1Info = document.getElementById('player1-info');
-            const player2Info = document.getElementById('player2-info');
-            const player1Pos = document.getElementById('player1-pos');
-            const player2Pos = document.getElementById('player2-pos');
-            const taskPopup = document.getElementById('task-popup');
-            const taskTitle = document.getElementById('task-title');
-            const taskContent = document.getElementById('task-content');
-            const taskOk = document.getElementById('task-ok');
-            
-            // 创建棋盘
-            function createBoard() {
-                board.innerHTML = '';
-                
-                // 创建50个格子
-                for (let i = 1; i <= 50; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'cell';
-                    cell.textContent = i;
-                    cell.id = `cell-${i}`;
-                    
-                    // 标记特殊格子
-                    if (gameState.specialCells[i]) {
-                        cell.classList.add('special');
-                    }
-                    
-                    // 起点和终点
-                    if (i === 1) {
-                        cell.classList.add('start');
-                    } else if (i === 50) {
-                        cell.classList.add('end');
-                    }
-                    
-                    board.appendChild(cell);
-                }
-                
-                // 添加玩家棋子
-                updatePlayerPositions();
-            }
-            
-            // 更新玩家位置
-            function updatePlayerPositions() {
-                // 移除旧的棋子
-                const oldPieces = document.querySelectorAll('.player1, .player2');
-                oldPieces.forEach(piece => piece.remove());
-                
-                // 添加玩家1棋子
-                if (gameState.player1Pos > 0 && gameState.player1Pos <= 50) {
-                    const cell = document.getElementById(`cell-${gameState.player1Pos}`);
-                    const piece = document.createElement('div');
-                    piece.className = 'player1';
-                    cell.appendChild(piece);
-                }
-                
-                // 添加玩家2棋子
-                if (gameState.player2Pos > 0 && gameState.player2Pos <= 50) {
-                    const cell = document.getElementById(`cell-${gameState.player2Pos}`);
-                    const piece = document.createElement('div');
-                    piece.className = 'player2';
-                    cell.appendChild(piece);
-                }
-                
-                // 更新位置显示
-                player1Pos.textContent = gameState.player1Pos === 0 ? '位置: 起点' : `位置: ${gameState.player1Pos}`;
-                player2Pos.textContent = gameState.player2Pos === 0 ? '位置: 起点' : `位置: ${gameState.player2Pos}`;
-            }
-            
-            // 掷骰骰子
-            function rollDice() {
-                return Math.floor(Math.random() * 6) + 1;
-            }
-            
-            // 切换玩家
-            function switchPlayer() {
-                gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
-                
-                if (gameState.currentPlayer === 1) {
-                    player1Info.classList.add('active');
-                    player2Info.classList.remove('active');
-                    message.textContent = '玩家1的回合，请掷骰骰子';
-                    message.style.backgroundColor = '#e3f2fd';
-                    message.style.color = '#4285f4';
-                } else {
-                    player1Info.classList.remove('active');
-                    player2Info.classList.add('active');
-                    message.textContent = '玩家2的回合，请掷骰骰子';
-                    message.style.backgroundColor = '#ffebee';
-                    message.style.color = '#ea4335';
-                }
-            }
-            
-            // 显示任务弹窗
-            function showTaskPopup(title, content) {
-                gameState.isProcessing = true; // 标记正在处理任务
-                taskTitle.textContent = title;
-                taskContent.textContent = content;
-                taskPopup.style.display = 'block';
-                
-                return new Promise((resolve) => {
-                    taskOk.onclick = function() {
-                        taskPopup.style.display = 'none';
-                        gameState.isProcessing = false; // 标记任务处理完成
-                        resolve();
-                    };
-                });
-            }
-            
-            // 处理格子任务
-            async function handleCellTask(position, player) {
-                const task = gameState.cellTasks[position];
-                const cellEffect = gameState.specialCells[position];
-                
-                if (cellEffect) {
-                    // 特殊格子
-                    await showTaskPopup('特殊效果', cellEffect.message);
-                    
-                    switch (cellEffect.type) {
-                        case 'back':
-                            if (player === 1) {
-                                gameState.player1Pos = Math.max(1, gameState.player1Pos - cellEffect.value);
-                            } else {
-                                gameState.player2Pos = Math.max(1, gameState.player2Pos - cellEffect.value);
-                            }
-                            break;
-                            
-                        case 'forward':
-                            if (player === 1) {
-                                gameState.player1Pos = Math.min(50, gameState.player1Pos + cellEffect.value);
-                            } else {
-                                gameState.player2Pos = Math.min(50, gameState.player2Pos + cellEffect.value);
-                            }
-                            break;
-                            
-                        case 'reroll':
-                            return true; // 需要重掷
-                    }
-                    
-                    updatePlayerPositions();
-                } else {
-                    // 普通格子 - 显示固定任务
-                    await showTaskPopup('互动任务', task);
-                }
-                
-                return false; // 不需要重掷
-            }
-            
-            // 检查游戏是否结束
-            function checkGameOver() {
-                if (gameState.player1Pos === 50) {
-                    message.textContent = '玩家1获胜！游戏结束';
-                    message.style.backgroundColor = '#c8e6c9';
-                    message.style.color = '#2e7d32';
-                    gameState.gameOver = true;
-                    rollBtn.textContent = '重新开始';
-                    return true;
-                }
-                
-                if (gameState.player2Pos === 50) {
-                    message.textContent = '玩家2获胜！游戏结束';
-                    message.style.backgroundColor = '#ffcdd2';
-                    message.style.color = '#c62828';
-                    gameState.gameOver = true;
-                    rollBtn.textContent = '重新开始';
-                    return true;
-                }
-                
-                return false;
-            }
-            
-            // 处理玩家移动
-            async function movePlayer(steps) {
-                if (gameState.gameOver || gameState.isProcessing) return;
-                
-                const player = gameState.currentPlayer;
-                let currentPosition = player === 1 ? gameState.player1Pos : gameState.player2Pos;
-                let newPosition = currentPosition + steps;
-                
-                // 如果超过终点，需要倒回
-                if (newPosition > 50) {
-                    newPosition = 50 - (newPosition - 50);
-                }
-                
-                // 添加移动动画
-                for (let i = 1; i <= steps; i++) {
-                    const tempPos = currentPosition + i;
-                    if (tempPos > 50) {
-                        // 处理超过终点的情况
-                        const bouncePos = 50 - (tempPos - 50);
-                        if (player === 1) {
-                            gameState.player1Pos = bouncePos;
-                        } else {
-                            gameState.player2Pos = bouncePos;
-                        }
-                    } else {
-                        if (player === 1) {
-                            gameState.player1Pos = tempPos;
-                        } else {
-                            gameState.player2Pos = tempPos;
-                        }
-                    }
-                    
-                    updatePlayerPositions();
-                    await new Promise(resolve => setTimeout(resolve, 300)); // 每步300毫秒
-                }
-                
-                if (checkGameOver()) return;
-                
-                // 处理格子任务
-                const needsReroll = await handleCellTask(newPosition, player);
-                
-                if (needsReroll) {
-                    message.textContent = player === 1 
-                        ? '玩家1获得重掷机会！' 
-                        : '玩家2获得重掷机会！';
-                    return;
-                }
-                
-                // 切换玩家
-                switchPlayer();
-            }
-            
-            // 初始化游戏
-            function initGame() {
-                gameState.currentPlayer = 1;
-                gameState.player1Pos = 0;
-                gameState.player2Pos = 0;
-                gameState.diceValue = 0;
-                gameState.gameOver = false;
-                gameState.isProcessing = false;
-                
-                player1Info.classList.add('active');
-                player2Info.classList.remove('active');
-                message.textContent = '玩家1的回合，请掷骰骰子';
-                message.style.backgroundColor = '#e3f2fd';
-                message.style.color = '#4285f4';
-                rollBtn.textContent = '掷骰骰子';
-                
-                createBoard();
-            }
-            
-            // 掷骰骰子按钮事件
-            rollBtn.addEventListener('click', function() {
-                if (gameState.gameOver) {
-                    initGame();
-                    return;
-                }
-                
-                if (gameState.isProcessing) return; // 如果正在处理任务，不允许掷骰骰子
-                
-                dice.textContent = '...';
-                rollBtn.disabled = true;
-                
-                // 模拟骰骰子动画
-                let rolls = 0;
-                const rollInterval = setInterval(() => {
-                    gameState.diceValue = rollDice();
-                    dice.textContent = gameState.diceValue;
-                    rolls++;
-                    
-                    if (rolls >= 5) {
-                        clearInterval(rollInterval);
-                        rollBtn.disabled = false;
-                        
-                        // 移动玩家
-                        movePlayer(gameState.diceValue);
-                    }
-                }, 100);
-            });
-            
-            // 初始化游戏
-            initGame();
-        });
+            // 演示用途：显示提示信息
+            alert('即将跳转到: ' + page + '\n在实际应用中，这里会进行页面跳转');
+        }
     </script>
 </body>
 </html>
